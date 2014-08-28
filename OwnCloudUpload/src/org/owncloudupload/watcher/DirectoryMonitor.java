@@ -170,7 +170,7 @@ public class DirectoryMonitor implements Runnable{
 	                else if(kind == ENTRY_CREATE){
 	                	upload(name);
 	                }
-	                //TODO modified and 
+	                //TODO modified and removed
 	            }
 
 	            // reset key and remove from set if directory no longer accessible
