@@ -31,5 +31,12 @@ class ServerConfig {
 		this.user = user;
 		this.password = password;
 	}
+
+	@Override
+	public String toString() {
+		return "ServerConfig [timeBeforeSynch=" + timeBeforeSynch
+				+ ", serverURL=" + serverURL + ", user=" + user + ", password="
+				+ password + "]";
+	}
 		
 }
