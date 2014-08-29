@@ -94,7 +94,7 @@ public class SettingsManager {
 
 	private static HashMap<Integer, File> printSettings() {
 		System.out.println("These are the current settings:\n");
-		Set keys = settings.settings.keySet();
+		Set keys = settings.getConfiguration().keySet();
 		Iterator iter = keys.iterator();
 		StringBuffer buff = new StringBuffer();
 		File key;
@@ -104,7 +104,7 @@ public class SettingsManager {
 		while (iter.hasNext()) {
 			key = (File) iter.next();
 			buff.append(pos + "." + key.getAbsolutePath() + " : "
-					+ settings.settings.get(key).toString());
+					+ settings.getConfiguration().get(key).toString());
 			quickAccess.put(new Integer(pos), key);
 			pos++;
 		}
@@ -164,7 +164,7 @@ public class SettingsManager {
 		ServerConfig conf = new ServerConfig(
 				new Long(Long.parseLong(values[1])), values[2], values[3],
 				values[4]);
-		settings.settings.put(new File(values[0]), conf);
+		settings.getConfiguration().put(new File(values[0]), conf);
 		keyboard.close();
 
 	}

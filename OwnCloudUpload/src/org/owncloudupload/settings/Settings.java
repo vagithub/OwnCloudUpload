@@ -8,12 +8,7 @@ import java.util.Set;
 
 public class Settings implements Serializable {
 
-	HashMap<File, ServerConfig> settings;
-
-	@Override
-	public String toString() {
-		
-	}
+	private HashMap<File, ServerConfig> settings;
 
 	public HashMap<File, ServerConfig> getConfiguration() {
 		return settings;
