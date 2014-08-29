@@ -14,9 +14,16 @@ public class Settings implements Serializable {
 		return settings;
 	}
 
+	public void addEntry(File file, ServerConfig conf){
+		this.settings.put(file, conf);
+	}
 	public Settings(HashMap<File, ServerConfig> settings) {
 		super();
 		this.settings = settings;
 	}
 
+	public Settings() {
+		super();
+	}
+	
 }

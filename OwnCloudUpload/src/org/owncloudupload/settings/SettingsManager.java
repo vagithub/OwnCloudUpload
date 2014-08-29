@@ -164,7 +164,7 @@ public class SettingsManager {
 		ServerConfig conf = new ServerConfig(
 				new Long(Long.parseLong(values[1])), values[2], values[3],
 				values[4]);
-		settings.getConfiguration().put(new File(values[0]), conf);
+		settings.addEntry(new File(values[0]), conf);
 		keyboard.close();
 
 	}

@@ -16,8 +16,11 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * TableDemo is just like SimpleTableDemo, except that it uses a custom
@@ -32,9 +35,9 @@ public class SettingsGUI extends JPanel {
 	public SettingsGUI() {
 		super(new GridLayout(2, 0));
 
-		DefaultTableModel m = new DefaultTableModel(data, columnNames);
+		DefaultTableModel model = new DefaultTableModel(data, columnNames);
 
-		final JTable table = new JTable(m);
+		final JTable table = new JTable(model);
 		table.setPreferredScrollableViewportSize(new Dimension(500, 70));
 		table.setFillsViewportHeight(true);
 
@@ -53,7 +56,7 @@ public class SettingsGUI extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
-				model.addRow(new Object[] { });
+				model.addRow(new Object[] {});
 				System.out.println(model.getDataVector().firstElement());
 			}
 		});
@@ -69,9 +72,21 @@ public class SettingsGUI extends JPanel {
 				System.out.println(model.getDataVector().firstElement());
 			}
 		});
+		JButton saveButton = new JButton("Save");
+
+		removeButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				saveSettings(table);
+				System.out.println(model.getDataVector().firstElement());
+			}
+		});
 
 		buttons.add(addButton);
 		buttons.add(removeButton);
+		buttons.add(saveButton);
 		add(buttons);
 	}
 
@@ -143,6 +158,21 @@ public class SettingsGUI extends JPanel {
 				createAndShowGUI(error, msg);
 			}
 		});
+	}
+
+	private void saveSettings(JTable table) {
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		Vector tableData = model.getDataVector();
+		Settings settings = new Settings();
+
+		for (Object o : tableData) {
+			settings.addEntry(
+					new File((String) Array.get(o, 0)),
+					new ServerConfig((Long) Array.get(0, 2), (String) Array
+							.get(0, 1), (String) Array.get(0, 3),
+							(String) Array.get(0, 4)));
+		}
+		SettingsManager.setSettings(settings);
 	}
 
 }
