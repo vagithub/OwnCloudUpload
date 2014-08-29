@@ -24,15 +24,31 @@ import java.util.Map;
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
 
+import org.owncloudupload.settings.ServerConfig;
+
 public class DirectoryMonitor implements Runnable{
 
 
     private WatchService watcher;
     private Map<WatchKey,Path> keys;
     private boolean recursive;
-    private boolean trace = false;
+    private boolean trace = false;   
+	private ServerConfig config;
+//    private File dir;
+    private Boolean stop = false;
+    
+    /*public File getDir() {
+		return dir;
+	}*/
+    public ServerConfig getConfig() {
+		return config;
+	}
 
-    @SuppressWarnings("unchecked")
+	public void setConfig(ServerConfig config) {
+		this.config = config;
+	}
+
+	@SuppressWarnings("unchecked")
     static <T> WatchEvent<T> cast(WatchEvent<?> event) {
         return (WatchEvent<T>)event;
     }
@@ -75,17 +91,19 @@ public class DirectoryMonitor implements Runnable{
     /**
      * Creates a WatchService and registers the given directory
      */
-    DirectoryMonitor(Path dir, boolean recursive) throws IOException {
+    DirectoryMonitor(File dir, boolean recursive, ServerConfig srvConfig) throws IOException {
+    	config = srvConfig;
+//    	this.dir = dir;
         this.watcher = FileSystems.getDefault().newWatchService();
         this.keys = new HashMap<WatchKey,Path>();
         this.recursive = recursive;
 
         if (recursive) {
             System.out.format("Scanning %s ...\n", dir);
-            registerAll(dir);
+            registerAll(dir.toPath());
             System.out.println("Done.");
         } else {
-            register(dir);
+            register(dir.toPath());
         }
 
         // enable trace after initial registration
@@ -121,9 +139,16 @@ public class DirectoryMonitor implements Runnable{
     	System.out.println("$$$$$$ " + name.getFileName());
     }
 
+    public Boolean getStop() {
+        return stop;
+    }
+
+    public void setStop(Boolean stop) {
+        this.stop = stop;
+    }       
 	@Override
 	public void run() {
-		   for (;;) {
+		  while (!stop) {
 
 	            // wait for key to be signalled
 	            WatchKey key;

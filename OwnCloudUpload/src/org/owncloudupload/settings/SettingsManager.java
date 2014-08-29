@@ -13,6 +13,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import org.apache.commons.validator.routines.UrlValidator;
+import org.owncloudupload.watcher.MonitorService;
 
 public class SettingsManager {
 
@@ -59,6 +60,7 @@ public class SettingsManager {
 
 	public static void setSettings(Settings sett) {
 		settings = sett;
+		MonitorService.settingsUpdated();
 	}
 
 	public static void editSettings() {
