@@ -28,6 +28,7 @@ public class SettingsManager {
 			settingsFileIn = new FileInputStream(SETTINGS_FILE);
 			in = new ObjectInputStream(settingsFileIn);
 			settings = (Settings) in.readObject();
+			MonitorService.settingsUpdated();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			new SettingsGUI().start(true, "No settings file found");
@@ -58,7 +59,7 @@ public class SettingsManager {
 		return settings;
 	}
 
-	public static void setSettings(Settings sett) {
+	public static void setSettings(Settings sett) {System.out.println("Im here 1");
 		settings = sett;
 		MonitorService.settingsUpdated();
 	}

@@ -10,7 +10,7 @@ import java.util.Set;
 import org.owncloudupload.settings.Settings;
 import org.owncloudupload.settings.SettingsManager;
 
-public class main {
+public class Main {
 
 	public static void main(String[] args) throws IOException {
 		SettingsManager.initSettings();

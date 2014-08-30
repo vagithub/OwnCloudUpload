@@ -10,7 +10,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -18,6 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.reflect.Array;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
@@ -30,14 +35,15 @@ public class SettingsGUI extends JPanel {
 
 	private Object[][] data;
 	private String[] columnNames = { "Folder path", "ownCloud URL for upload",
-			"Time before synch (0 for immediate)", "User", "Password" };
+			"Minutes before synch (0 for immediate)", "User", "Password" };
 
 	public SettingsGUI() {
 		super(new GridLayout(2, 0));
 
-		DefaultTableModel model = new DefaultTableModel(data, columnNames);
+		CustomDefaultTableModel model = new CustomDefaultTableModel(data, columnNames);
 
 		final JTable table = new JTable(model);
+		
 		table.setPreferredScrollableViewportSize(new Dimension(500, 70));
 		table.setFillsViewportHeight(true);
 
@@ -57,7 +63,6 @@ public class SettingsGUI extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.addRow(new Object[] {});
-				System.out.println(model.getDataVector().firstElement());
 			}
 		});
 
@@ -69,18 +74,16 @@ public class SettingsGUI extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.removeRow(table.getSelectedRow());
-				System.out.println(model.getDataVector().firstElement());
 			}
 		});
 		JButton saveButton = new JButton("Save");
 
-		removeButton.addActionListener(new ActionListener() {
+		saveButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				
 				saveSettings(table);
-				System.out.println(model.getDataVector().firstElement());
 			}
 		});
 
@@ -164,15 +167,32 @@ public class SettingsGUI extends JPanel {
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		Vector tableData = model.getDataVector();
 		Settings settings = new Settings();
+		Vector tmp;
 
-		for (Object o : tableData) {
+		for (Object o : tableData) {System.out.println(o);
+		tmp = (Vector) o;
 			settings.addEntry(
-					new File((String) Array.get(o, 0)),
-					new ServerConfig((Long) Array.get(0, 2), (String) Array
-							.get(0, 1), (String) Array.get(0, 3),
-							(String) Array.get(0, 4)));
+					new File((String) tmp.get(0)),
+					new ServerConfig((Long) tmp.get(2), (String) tmp
+							.get(1), (String) tmp.get(3),
+							(String) tmp.get(4)));
 		}
 		SettingsManager.setSettings(settings);
 	}
 
+}
+
+class CustomDefaultTableModel extends DefaultTableModel{
+
+	public CustomDefaultTableModel(Object[][] data, String[] columnNames) {
+		super(data,columnNames);
+	}
+
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		if(columnIndex==2)
+			return Long.class;
+		return super.getColumnClass(columnIndex);
+	}
+	
 }

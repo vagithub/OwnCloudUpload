@@ -23,7 +23,7 @@ public class MonitorService {
 	}
 
 	public static void settingsUpdated() {
-
+System.out.println("I'm here");
 		File tmp;
 		Settings sett = SettingsManager.getSettings();
 		Set<File> keys = monitors.keySet();
