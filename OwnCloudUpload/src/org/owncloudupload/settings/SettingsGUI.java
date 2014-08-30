@@ -16,6 +16,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import java.awt.Button;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -83,7 +85,6 @@ public class SettingsGUI extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
 				saveSettings(table);
 			}
 		});
@@ -122,8 +123,9 @@ public class SettingsGUI extends JPanel {
 	 */
 	private static void createAndShowGUI(boolean error, String msg) {
 		// Create and set up the window.
-		JFrame frame = new JFrame("Settings editor");
+		final JFrame frame = new JFrame("Settings editor");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
 
 		if (error) {
 			JOptionPane.showMessageDialog(frame, msg);
@@ -134,6 +136,7 @@ public class SettingsGUI extends JPanel {
 		if(!error){
 			newContentPane.populateData();
 		}
+		
 		newContentPane.setOpaque(true); // content panes must be opaque
 		frame.setContentPane(newContentPane);
 

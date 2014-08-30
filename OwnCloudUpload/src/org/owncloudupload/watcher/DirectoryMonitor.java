@@ -26,7 +26,7 @@ import com.github.sardine.SardineFactory;
 
 import org.owncloudupload.settings.ServerConfig;
 
-public class DirectoryMonitor implements Runnable{
+public class DirectoryMonitor extends Thread{
 
 
     private WatchService watcher;

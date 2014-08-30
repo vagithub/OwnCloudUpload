@@ -42,7 +42,8 @@ System.out.println("I'm here");
 					try {
 						monitors.put(tmp, new DirectoryMonitor(tmp, true, sett
 								.getConfiguration().get(tmp)));
-						monitors.get(tmp).run();
+						Thread thread = new Thread(monitors.get(tmp));
+						   thread.start();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -58,7 +59,8 @@ System.out.println("I'm here");
 					try {
 						monitors.put(tmp, new DirectoryMonitor(tmp, true, sett
 								.getConfiguration().get(tmp)));
-						monitors.get(tmp).run();
+						Thread thread = new Thread(monitors.get(tmp));
+						   thread.start();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -74,7 +76,8 @@ System.out.println("I'm here");
 							.getConfiguration().get(tmp));
 					monitors.put(tmp, new DirectoryMonitor(tmp, true, sett
 							.getConfiguration().get(tmp)));
-					monitors.get(tmp).run();
+					Thread thread = new Thread(monitors.get(tmp));
+					   thread.start();
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
