@@ -187,12 +187,23 @@ public class DirectoryMonitor implements Runnable{
 	                        if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
 	                            registerAll(child);	                         
 	                        }
+	                       Thread.sleep(config.getTimeBeforeSynch()*60000);
 	                        upload(name);
 	                    } catch (IOException x) {
 	                        // ignore to keep sample readbale
-	                    }
+	                    } catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 	                }
 	                else if(kind == ENTRY_CREATE){
+	                       try {
+							Thread.sleep(config.getTimeBeforeSynch()*60000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
 	                	upload(name);
 	                }
 	                //TODO modified and removed

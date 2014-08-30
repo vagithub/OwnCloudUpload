@@ -14,14 +14,7 @@ public class main {
 
 	public static void main(String[] args) throws IOException {
 		SettingsManager.initSettings();
-		Settings se = SettingsManager.getSettings();
-	/*	Set set = se.getConfiguration().keySet();
-		Iterator i = set.iterator();
-		while(i.hasNext()){
-			File n = (File) i.next();
-			new DirectoryMonitor(n.toPath(), true).run();;
-		}
-*/
+	
 	}
 
 }

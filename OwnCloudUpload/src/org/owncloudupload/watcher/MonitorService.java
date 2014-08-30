@@ -12,7 +12,7 @@ import org.owncloudupload.settings.SettingsManager;
 
 public class MonitorService {
 
-	private static HashMap<File, DirectoryMonitor> monitors;
+	private static HashMap<File, DirectoryMonitor> monitors = new HashMap<File, DirectoryMonitor>();
 
 	/*
 	 * public static void addMonitor(DirectoryMonitor monitor) {
@@ -26,29 +26,57 @@ public class MonitorService {
 
 		File tmp;
 		Settings sett = SettingsManager.getSettings();
-		Set keys = monitors.keySet();
-		Iterator iter = keys.iterator();
+		Set<File> keys = monitors.keySet();
+		Iterator<File> iter = keys.iterator();
 
-		while (iter.hasNext()) {
-			tmp = (File) iter.next();
-			if (!sett.getConfiguration().containsKey(tmp)) {
-				monitors.get(tmp).setStop(true);
-				monitors.remove(tmp);
-			} else if (!monitors.get(tmp).getConfig()
-					.isConfigurationSame(sett.getConfiguration().get(tmp))) {
-				monitors.get(tmp).setStop(true);
-				monitors.remove(tmp);
-				// TODO
+		if (monitors.size() != 0) {
+			while (iter.hasNext()) {
+				tmp = (File) iter.next();
+				if (!sett.getConfiguration().containsKey(tmp)) {
+					monitors.get(tmp).setStop(true);
+					monitors.remove(tmp);
+				} else if (!monitors.get(tmp).getConfig()
+						.isConfigurationSame(sett.getConfiguration().get(tmp))) {
+					monitors.get(tmp).setStop(true);
+					monitors.remove(tmp);
+					try {
+						monitors.put(tmp, new DirectoryMonitor(tmp, true, sett
+								.getConfiguration().get(tmp))).run();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+
+			keys = sett.getConfiguration().keySet();
+			iter = keys.iterator();
+			while (iter.hasNext()) {
+				tmp = (File) iter.next();
+				if (!monitors.containsKey(tmp)) {
+					try {
+						monitors.put(tmp, new DirectoryMonitor(tmp, true, sett
+								.getConfiguration().get(tmp))).run();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		} else {
+			keys = sett.getConfiguration().keySet();
+			iter = keys.iterator();
+			while (iter.hasNext()) {
+				tmp = (File) iter.next();
+				try {
+					monitors.put(tmp, new DirectoryMonitor(tmp, true, sett
+							.getConfiguration().get(tmp))).run();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
-		
-		keys = sett.getConfiguration().keySet();
-		iter = keys.iterator();
-		while(iter.hasNext()){
-			tmp = (File) iter.next();
-			if(!monitors.containsKey(tmp)){
-				//TODO
-			}
-		}
+
 	}
 }
