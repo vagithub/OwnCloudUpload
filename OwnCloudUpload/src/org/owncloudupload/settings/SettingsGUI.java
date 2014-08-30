@@ -22,6 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.reflect.Array;
+import java.sql.Savepoint;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Set;
@@ -38,10 +39,10 @@ public class SettingsGUI extends JPanel {
 			"Minutes before synch (0 for immediate)", "User", "Password" };
 
 	public SettingsGUI() {
-		super(new GridLayout(2, 0));
-
+		super(new GridLayout(2, 0));	
+		populateData();
 		CustomDefaultTableModel model = new CustomDefaultTableModel(data, columnNames);
-
+		
 		final JTable table = new JTable(model);
 		
 		table.setPreferredScrollableViewportSize(new Dimension(500, 70));
@@ -96,6 +97,7 @@ public class SettingsGUI extends JPanel {
 	private void populateData() {
 
 		Settings settings = SettingsManager.getSettings();
+		if(settings == null) return;
 		Set keys = settings.getConfiguration().keySet();
 		Iterator iter = keys.iterator();
 		Object key;
@@ -120,8 +122,8 @@ public class SettingsGUI extends JPanel {
 	 */
 	private static void createAndShowGUI(boolean error, String msg) {
 		// Create and set up the window.
-		JFrame frame = new JFrame("TableDemo");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JFrame frame = new JFrame("Settings editor");
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		if (error) {
 			JOptionPane.showMessageDialog(frame, msg);
@@ -129,6 +131,9 @@ public class SettingsGUI extends JPanel {
 		}
 		// Create and set up the content pane.
 		SettingsGUI newContentPane = new SettingsGUI();
+		if(!error){
+			newContentPane.populateData();
+		}
 		newContentPane.setOpaque(true); // content panes must be opaque
 		frame.setContentPane(newContentPane);
 
@@ -137,27 +142,13 @@ public class SettingsGUI extends JPanel {
 		frame.setVisible(true);
 	}
 
-	public void start() {
+	
+	public void show(final boolean error, final String msg) {
 		// Schedule a job for the event-dispatching thread:
 		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				populateData();
-				createAndShowGUI(false, null);
-			}
-		});
-	}
-
-	public void start(final boolean error, final String msg) {
-		// Schedule a job for the event-dispatching thread:
-		// creating and showing this application's GUI.
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				if (error) {
-					data = new Object[1][5];
-				} else {
-					populateData();
-				}
+				
 				createAndShowGUI(error, msg);
 			}
 		});
@@ -169,10 +160,10 @@ public class SettingsGUI extends JPanel {
 		Settings settings = new Settings();
 		Vector tmp;
 
-		for (Object o : tableData) {System.out.println(o);
+		for (Object o : tableData) {
 		tmp = (Vector) o;
 			settings.addEntry(
-					new File((String) tmp.get(0)),
+					 (File) tmp.get(0),
 					new ServerConfig((Long) tmp.get(2), (String) tmp
 							.get(1), (String) tmp.get(3),
 							(String) tmp.get(4)));
@@ -186,13 +177,17 @@ class CustomDefaultTableModel extends DefaultTableModel{
 
 	public CustomDefaultTableModel(Object[][] data, String[] columnNames) {
 		super(data,columnNames);
+		this.setDataVector(data, columnNames);
 	}
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		if(columnIndex==2)
 			return Long.class;
+		if(columnIndex==0)
+			return File.class;
 		return super.getColumnClass(columnIndex);
 	}
 	
 }
+

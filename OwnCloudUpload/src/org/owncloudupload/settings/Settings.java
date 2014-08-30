@@ -14,7 +14,7 @@ public class Settings implements Serializable {
 		return settings;
 	}
 
-	public void addEntry(File file, ServerConfig conf){System.out.println(file.getPath()+ " " + conf.toString());
+	public void addEntry(File file, ServerConfig conf){
 		this.settings.put(file, conf);
 	}
 	public Settings(HashMap<File, ServerConfig> settings) {

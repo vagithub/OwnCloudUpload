@@ -41,7 +41,8 @@ System.out.println("I'm here");
 					monitors.remove(tmp);
 					try {
 						monitors.put(tmp, new DirectoryMonitor(tmp, true, sett
-								.getConfiguration().get(tmp))).run();
+								.getConfiguration().get(tmp)));
+						monitors.get(tmp).run();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -56,7 +57,8 @@ System.out.println("I'm here");
 				if (!monitors.containsKey(tmp)) {
 					try {
 						monitors.put(tmp, new DirectoryMonitor(tmp, true, sett
-								.getConfiguration().get(tmp))).run();
+								.getConfiguration().get(tmp)));
+						monitors.get(tmp).run();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -68,9 +70,12 @@ System.out.println("I'm here");
 			iter = keys.iterator();
 			while (iter.hasNext()) {
 				tmp = (File) iter.next();
-				try {
+				try {System.out.println( sett
+							.getConfiguration().get(tmp));
 					monitors.put(tmp, new DirectoryMonitor(tmp, true, sett
-							.getConfiguration().get(tmp))).run();
+							.getConfiguration().get(tmp)));
+					monitors.get(tmp).run();
+					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

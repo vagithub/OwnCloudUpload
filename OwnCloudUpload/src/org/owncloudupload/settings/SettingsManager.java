@@ -31,10 +31,10 @@ public class SettingsManager {
 			MonitorService.settingsUpdated();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			new SettingsGUI().start(true, "No settings file found");
+			new SettingsGUI().show(true, "No settings file found");
 		} catch (IOException e) {
 			e.printStackTrace();
-			new SettingsGUI().start(true,
+			new SettingsGUI().show(true,
 					"Error reading the settings file.Creating a new one");
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -59,7 +59,7 @@ public class SettingsManager {
 		return settings;
 	}
 
-	public static void setSettings(Settings sett) {System.out.println("Im here 1");
+	public static void setSettings(Settings sett) {
 		settings = sett;
 		MonitorService.settingsUpdated();
 	}
