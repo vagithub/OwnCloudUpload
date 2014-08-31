@@ -33,11 +33,11 @@ public class SettingsManager {
 			MonitorService.settingsUpdated();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			System.out.println("No settings file found.Please use the config(GUI) or configc(command line) to configure the client");
+			System.out.println("No settings file found.Please use the config(GUI) or configc(command line) utilities to configure the client");
 //			new SettingsGUI().show(true, "No settings file found");
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error reading the settings file.Please use the config(GUI) or configc(command line) to configure the client");
+			System.out.println("Error reading the settings file.Please use the config(GUI) or configc(command line) utilities to configure the client");
 //			new SettingsGUI().show(true,
 //					"Error reading the settings file.Creating a new one");
 		} catch (ClassNotFoundException e) {

@@ -7,7 +7,10 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -34,12 +37,9 @@ public class DirectoryMonitor extends Thread{
     private boolean recursive;
     private boolean trace = false;   
 	private ServerConfig config;
-//    private File dir;
     private Boolean stop = false;
-    
-    /*public File getDir() {
-		return dir;
-	}*/
+    private static final String WEBDAV_PATH = "remote.php/webdav/";
+ 
     public ServerConfig getConfig() {
 		return config;
 	}
@@ -133,9 +133,17 @@ public class DirectoryMonitor extends Thread{
         new WatchDir(dir, recursive).processEvents();
     }
     
-    private void upload(Path name) {
-    	Sardine sardine = SardineFactory.begin("admin", "admin");
-//        sardine.put("http://localhost/owncloud/remote.php/webdav/", new File("/home/va/Desktop/wifi.txt"), "text/plain");
+    private void upload(Path name) throws FileNotFoundException, IOException {
+    	Sardine sardine = SardineFactory.begin(config.getUser(),config.getPassword());
+    	String URL;
+    	if(config.getServerURL().endsWith("/")){
+    		URL = config.getServerURL() + WEBDAV_PATH;
+    	}
+    	else
+    	{
+    		URL = config.getServerURL() + "/" + WEBDAV_PATH;
+    	}
+    	sardine.put(URL, new FileInputStream(name.toFile()));
     	System.out.println("$$$$$$ " + name.getFileName());
     }
 
@@ -204,7 +212,12 @@ public class DirectoryMonitor extends Thread{
 							e.printStackTrace();
 						}
 
-	                	upload(name);
+	                	try {
+							upload(name);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 	                }
 	                //TODO modified and removed
 	            }
