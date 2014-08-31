@@ -1,6 +1,8 @@
 package org.owncloudupload.settings;
 
-public class ServerConfig {
+import java.io.Serializable;
+
+public class ServerConfig implements Serializable{
 
 	private Long timeBeforeSynch;
 	private String serverURL;

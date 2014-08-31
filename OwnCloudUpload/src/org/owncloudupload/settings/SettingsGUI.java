@@ -16,6 +16,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.commons.validator.routines.UrlValidator;
+
 import java.awt.Button;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -171,11 +173,53 @@ public class SettingsGUI extends JPanel {
 							.get(1), (String) tmp.get(3),
 							(String) tmp.get(4)));
 		}
-		SettingsManager.setSettings(settings);
+		
+		JFrame frame = new JFrame();
+		boolean correctnes = verifySettings(table);
+
+		if (!correctnes) {
+			JOptionPane.showMessageDialog(frame, "You have entered invalid settings."
+					+ "Please provide valid paths to folders, "
+					+ "correct URLs (beginning with http:// or https://)"
+					+ " and non-negative values for minutes)");
+			frame.dispose();
+		}
+		else {
+			SettingsManager.setSettings(settings);
+		}
 	}
 
-}
+	private boolean verifySettings(JTable table){
+		
+	
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		Vector tableData = model.getDataVector();
+		Settings settings = new Settings();
+		Vector tmp;
+		String[] schemes = { "http", "https" };
+		UrlValidator urlValidator = new UrlValidator(schemes,
+				UrlValidator.ALLOW_LOCAL_URLS);
 
+		
+		for (Object o : tableData) {
+		tmp = (Vector) o;
+		if(!((File)tmp.get(0)).isDirectory())
+		{
+			return false;
+		}
+		if(!urlValidator.isValid((String) tmp.get(1)))
+			{
+			return false;
+			}
+		if(((Long)tmp.get(2)).longValue()<0)
+			{
+			return false;
+			}
+	}
+		return true;
+}
+	
+}
 class CustomDefaultTableModel extends DefaultTableModel{
 
 	public CustomDefaultTableModel(Object[][] data, String[] columnNames) {

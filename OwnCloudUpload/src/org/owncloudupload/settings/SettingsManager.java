@@ -131,7 +131,7 @@ public class SettingsManager {
 		System.out.print("Enter new directory for monitoring:");
 		tmpStr = keyboard.nextLine();
 		while (!new File(tmpStr).isDirectory()) {
-			System.out.print("You have invalid path."
+			System.out.print("You have entered invalid path."
 					+ "Please enter valid path to directory:");
 			tmpStr = keyboard.nextLine();
 		}
@@ -170,6 +170,10 @@ public class SettingsManager {
 		settings.addEntry(new File(values[0]), conf);
 		keyboard.close();
 
+	}
+	
+	private static void editEntry(int index){
+		
 	}
 
 	private SettingsManager() {

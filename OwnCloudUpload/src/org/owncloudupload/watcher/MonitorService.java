@@ -23,7 +23,7 @@ public class MonitorService {
 	}
 
 	public static void settingsUpdated() {
-System.out.println("I'm here");
+
 		File tmp;
 		Settings sett = SettingsManager.getSettings();
 		Set<File> keys = monitors.keySet();
@@ -72,8 +72,7 @@ System.out.println("I'm here");
 			iter = keys.iterator();
 			while (iter.hasNext()) {
 				tmp = (File) iter.next();
-				try {System.out.println( sett
-							.getConfiguration().get(tmp));
+				try {
 					monitors.put(tmp, new DirectoryMonitor(tmp, true, sett
 							.getConfiguration().get(tmp)));
 					Thread thread = new Thread(monitors.get(tmp));

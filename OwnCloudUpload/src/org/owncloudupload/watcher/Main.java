@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-
 import org.owncloudupload.command.CommandParser;
 //import org.owncloudupload.settings.ServerConfig;
 import org.owncloudupload.settings.Settings;
@@ -17,7 +16,8 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		SettingsManager.initSettings();
 		CommandParser cmd = new CommandParser();
-		cmd.run();
+		Thread thread = new Thread(cmd);
+		   thread.start();
 	
 	}
 
