@@ -3,8 +3,6 @@ package org.owncloudupload.settings;
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
 public class Settings implements Serializable {
 
@@ -17,6 +15,11 @@ public class Settings implements Serializable {
 	public void addEntry(File file, ServerConfig conf){
 		this.settings.put(file, conf);
 	}
+	
+	public void removeEntry(File file){
+		this.settings.remove(file);
+	}
+	
 	public Settings(HashMap<File, ServerConfig> settings) {
 		super();
 		this.settings = settings;

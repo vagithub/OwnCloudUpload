@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.owncloudupload.watcher.MonitorService;
@@ -19,6 +20,7 @@ public class SettingsManager {
 
 	private static Settings settings;
 	private static final String SETTINGS_FILE = "config.ser";
+	private static HashMap<Integer, File> quickAccess;
 
 	public static void initSettings() {
 
@@ -31,11 +33,13 @@ public class SettingsManager {
 			MonitorService.settingsUpdated();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			new SettingsGUI().show(true, "No settings file found");
+			System.out.println("No settings file found.Please use the config(GUI) or configc(command line) to configure the client");
+//			new SettingsGUI().show(true, "No settings file found");
 		} catch (IOException e) {
 			e.printStackTrace();
-			new SettingsGUI().show(true,
-					"Error reading the settings file.Creating a new one");
+			System.out.println("Error reading the settings file.Please use the config(GUI) or configc(command line) to configure the client");
+//			new SettingsGUI().show(true,
+//					"Error reading the settings file.Creating a new one");
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -67,28 +71,40 @@ public class SettingsManager {
 	public static void editSettings() {
 		int choice = -1;
 		Scanner scanner = new Scanner(System.in);
-		HashMap<Integer, File> quickAccess = new HashMap();
-		
-		
+		int index;
+
 		while (choice != 4) {
-			System.out.println("-----------------");	
+			System.out.println("-----------------");
 			quickAccess = printSettings();
-			System.out.println("-----------------");	
-			System.out.println("Choose a task:\n"
-					+ "1.Add new entries\n" + "2.Edit an entry\n"
-					+ "3.Remove an entry\n" + "4.Exit the config utility\n");
+			if(quickAccess == null){
+				settings = new Settings();
+			}
+			System.out.println("-----------------");
+			System.out.println("Choose a task:\n" + "1.Add new entries\n"
+						+ "2.Edit an entry\n" + "3.Remove an entry\n"
+						+ "4.Exit the config utility\n");
+		 
 			choice = scanner.nextInt();
 			switch (choice) {
-			
+
 			case 1: {
-				readEntryFromKeyboard();
+				readEntryFromKeyboard(false, null);
 				break;
 			}
 			case 2: {
-				// todo
+				System.out.println("Enter the index of the entry for editing:");
+				index = scanner.nextInt();
+				File key = quickAccess.get(new Integer(index));
+				readEntryFromKeyboard(true, key);
+				break;
 			}
 			case 3: {
-				// todo
+				System.out
+						.println("Enter the index of the entry for deletion:");
+				index = scanner.nextInt();
+				File file = quickAccess.get(new Integer(index));
+				settings.removeEntry(file);
+				break;
 			}
 			}
 
@@ -96,28 +112,52 @@ public class SettingsManager {
 	}
 
 	private static HashMap<Integer, File> printSettings() {
-		System.out.println("These are the current settings:\n");
+
+		
+		if (settings != null) {
+			System.out.println("These are the current settings:\n");
+			Set keys = settings.getConfiguration().keySet();
+			Iterator iter = keys.iterator();
+			StringBuffer buff = new StringBuffer();
+			File key;
+			int pos = 0;
+			HashMap<Integer, File> map = new HashMap();
+
+			while (iter.hasNext()) {
+				key = (File) iter.next();
+				buff.append(pos + "." + key.getAbsolutePath() + " : "
+						+ settings.getConfiguration().get(key).toString());
+				map.put(new Integer(pos), key);
+				pos++;
+			}
+
+			System.out.println(buff.toString());
+			return map;
+		} else {
+			System.out.println("These are no current settings:\n");
+			return null;
+		}
+	}
+
+	private void populateQuickAccess() {
 		Set keys = settings.getConfiguration().keySet();
 		Iterator iter = keys.iterator();
 		StringBuffer buff = new StringBuffer();
 		File key;
 		int pos = 0;
-		HashMap<Integer, File> quickAccess = new HashMap();
+		HashMap<Integer, File> map = new HashMap();
 
 		while (iter.hasNext()) {
 			key = (File) iter.next();
 			buff.append(pos + "." + key.getAbsolutePath() + " : "
 					+ settings.getConfiguration().get(key).toString());
-			quickAccess.put(new Integer(pos), key);
+			map.put(new Integer(pos), key);
 			pos++;
 		}
-
-		System.out.println(buff.toString());
-		return quickAccess;
+		quickAccess = map;
 	}
-	
-	
-	private static void readEntryFromKeyboard() {
+
+	private static void readEntryFromKeyboard(boolean edit, File key) {
 
 		long tmpLong;
 		Scanner keyboard = new Scanner(System.in);
@@ -128,14 +168,16 @@ public class SettingsManager {
 		UrlValidator urlValidator = new UrlValidator(schemes,
 				UrlValidator.ALLOW_LOCAL_URLS);
 
-		System.out.print("Enter new directory for monitoring:");
-		tmpStr = keyboard.nextLine();
-		while (!new File(tmpStr).isDirectory()) {
-			System.out.print("You have entered invalid path."
-					+ "Please enter valid path to directory:");
+		if (!edit) {
+			System.out.print("Enter new directory for monitoring:");
 			tmpStr = keyboard.nextLine();
+			while (!new File(tmpStr).isDirectory()) {
+				System.out.print("You have entered invalid path."
+						+ "Please enter valid path to directory:");
+				tmpStr = keyboard.nextLine();
+			}
+			entry.append(tmpStr + ",");
 		}
-		entry.append(tmpStr + ",");
 
 		System.out.print("Enter time before synchronization."
 				+ "Value 0 indicates immediate synchronization:");
@@ -149,11 +191,12 @@ public class SettingsManager {
 
 		System.out.print("Enter the ownClowd URL for synchronizing:");
 		tmpStr = keyboard.nextLine();
-		while (!urlValidator.isValid(tmpStr)) {
-			tmpStr = keyboard.nextLine();
+		while (!urlValidator.isValid(tmpStr)) {			
 			System.out.print("You have entered invalid URL."
 					+ "Please enter valid URL:");
+			tmpStr = keyboard.nextLine();
 		}
+		entry.append(tmpStr + ",");
 
 		System.out.print("Enter the username:");
 		tmpStr = keyboard.nextLine();
@@ -164,16 +207,20 @@ public class SettingsManager {
 		entry.append(tmpStr + "\n");
 
 		String[] values = entry.toString().split(",");
-		ServerConfig conf = new ServerConfig(
-				new Long(Long.parseLong(values[1])), values[2], values[3],
-				values[4]);
-		settings.addEntry(new File(values[0]), conf);
-		keyboard.close();
-
-	}
-	
-	private static void editEntry(int index){
 		
+		if (!edit) {
+			ServerConfig conf = new ServerConfig(
+					new Long(Long.parseLong(values[1])), values[2], values[3],
+					values[4]);
+			settings.addEntry(new File(values[0]), conf);
+		} else {
+			ServerConfig conf = new ServerConfig(
+					new Long(Long.parseLong(values[0])), values[1], values[2],
+					values[3]);
+			settings.addEntry(key, conf);
+		}
+//		keyboard.close();
+
 	}
 
 	private SettingsManager() {
