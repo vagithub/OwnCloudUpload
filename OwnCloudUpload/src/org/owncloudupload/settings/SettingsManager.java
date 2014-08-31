@@ -109,6 +109,7 @@ public class SettingsManager {
 			}
 
 		}
+		MonitorService.settingsUpdated();
 	}
 
 	private static HashMap<Integer, File> printSettings() {

@@ -17,7 +17,7 @@ public class CommandParser implements Runnable {
 			choice = keyboard.nextLine();
 			switch (choice) {
 			case "config": {
-				new SettingsGUI().show(false, null);
+				new SettingsGUI().show();
 				break;
 			}
 			case "configc": {
