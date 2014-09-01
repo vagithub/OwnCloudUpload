@@ -38,6 +38,7 @@ public class DirectoryMonitor extends Thread{
     private boolean trace = false;   
 	private ServerConfig config;
     private Boolean stop = false;
+    private File dir;
     private static final String WEBDAV_PATH = "remote.php/webdav/";
  
     public ServerConfig getConfig() {
@@ -93,7 +94,7 @@ public class DirectoryMonitor extends Thread{
      */
     DirectoryMonitor(File dir, boolean recursive, ServerConfig srvConfig) throws IOException {
     	config = srvConfig;
-//    	this.dir = dir;
+    	this.dir = dir;
         this.watcher = FileSystems.getDefault().newWatchService();
         this.keys = new HashMap<WatchKey,Path>();
         this.recursive = recursive;
@@ -133,20 +134,30 @@ public class DirectoryMonitor extends Thread{
         new WatchDir(dir, recursive).processEvents();
     }
     
-    private void upload(Path name) throws FileNotFoundException, IOException {
+    private void upload(Path file) throws FileNotFoundException, IOException {
+    	
     	Sardine sardine = SardineFactory.begin(config.getUser(),config.getPassword());
     	String URL;
-    	if(config.getServerURL().endsWith("/")){
-    		URL = config.getServerURL() + WEBDAV_PATH;
+    	String pathOnServer = file.toString();
+    	String root = dir.getAbsolutePath();
+    	int trimEnd = root.length();
+    	
+    	pathOnServer = pathOnServer.substring(pathOnServer.indexOf(root)+ trimEnd +1);
+		pathOnServer = pathOnServer.replace(file.toFile().separatorChar, '/');
+    	if(config.getServerURL().endsWith("/"))
+    	{    		
+    		URL = config.getServerURL() + WEBDAV_PATH + pathOnServer;
     	}
     	else
-    	{
-    		URL = config.getServerURL() + "/" + WEBDAV_PATH;
+    	{    		
+    		URL = config.getServerURL() + "/"+ WEBDAV_PATH + pathOnServer;
     	}
-    	sardine.put(URL, new FileInputStream(name.toFile()));
-    	System.out.println("$$$$$$ " + name.getFileName());
+    	URL.replace(" ", "%20");
+//    	sardine.put(URL, new FileInputStream(name.toFile()));
+    	System.out.println("$$$$$$ " + file.toAbsolutePath() + " &&  && "+ URL);
     }
-
+    
+   
     public Boolean getStop() {
         return stop;
     }
@@ -193,10 +204,10 @@ public class DirectoryMonitor extends Thread{
 	                if (recursive && (kind == ENTRY_CREATE)) {
 	                    try {
 	                        if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
-	                            registerAll(child);	                         
+	                            registerAll(child);
 	                        }
 	                       Thread.sleep(config.getTimeBeforeSynch()*60000);
-	                        upload(name);
+	                        upload(child);
 	                    } catch (IOException x) {
 	                        // ignore to keep sample readbale
 	                    } catch (InterruptedException e) {
@@ -213,7 +224,7 @@ public class DirectoryMonitor extends Thread{
 						}
 
 	                	try {
-							upload(name);
+							upload(child);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
