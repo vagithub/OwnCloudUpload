@@ -205,6 +205,15 @@ public class DirectoryMonitor extends Thread{
 	                    try {
 	                        if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
 	                            registerAll(child);
+	                            Files.walkFileTree(child, new SimpleFileVisitor<Path>() {
+	                                @Override
+	                                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+	                                    throws IOException
+	                                {
+	                                    upload(file);
+	                                    return FileVisitResult.CONTINUE;
+	                                }
+	                            });
 	                        }
 	                       Thread.sleep(config.getTimeBeforeSynch()*60000);
 	                        upload(child);
