@@ -70,6 +70,12 @@ public class DirectoryMonitor extends Thread{
             }
         }
         keys.put(key, dir);
+        
+       /* File[] fileList = dir.toFile().listFiles();
+        for(File f : fileList){
+        	if(!f.isDirectory())
+        	upload(f.toPath());
+        }*/
     }
 
     /**
@@ -153,6 +159,7 @@ public class DirectoryMonitor extends Thread{
     		URL = config.getServerURL() + "/"+ WEBDAV_PATH + pathOnServer;
     	}
     	URL.replace(" ", "%20");
+    	
 //    	sardine.put(URL, new FileInputStream(name.toFile()));
     	System.out.println("$$$$$$ " + file.toAbsolutePath() + " &&  && "+ URL);
     }
@@ -205,8 +212,20 @@ public class DirectoryMonitor extends Thread{
 	                    try {
 	                        if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
 	                            registerAll(child);
-	                            Files.walkFileTree(child, new SimpleFileVisitor<Path>() {
+	                            
+	                        }
+	                       Thread.sleep(config.getTimeBeforeSynch()*60000);
+//	                        upload(child);
+	                        Files.walkFileTree(child, new SimpleFileVisitor<Path>() {
 	                                @Override
+								public FileVisitResult preVisitDirectory(
+										Path dir, BasicFileAttributes attrs)
+										throws IOException {
+	                                	upload(dir);
+	                                    return FileVisitResult.CONTINUE;
+								}
+
+									@Override
 	                                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
 	                                    throws IOException
 	                                {
@@ -214,9 +233,6 @@ public class DirectoryMonitor extends Thread{
 	                                    return FileVisitResult.CONTINUE;
 	                                }
 	                            });
-	                        }
-	                       Thread.sleep(config.getTimeBeforeSynch()*60000);
-	                        upload(child);
 	                    } catch (IOException x) {
 	                        // ignore to keep sample readbale
 	                    } catch (InterruptedException e) {
