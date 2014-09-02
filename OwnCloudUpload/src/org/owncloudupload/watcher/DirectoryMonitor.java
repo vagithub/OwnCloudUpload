@@ -210,7 +210,7 @@ public class DirectoryMonitor extends Thread{
 	@Override
 	public void run() {
 		
-		  while(true) {
+		  while(!stop) {
 			  // wait for key to be signalled
 	            WatchKey key;
 	            try {

@@ -37,17 +37,8 @@ public class MonitorService {
 					monitors.remove(tmp);
 				} else if (!monitors.get(tmp).getConfig()
 						.isConfigurationSame(sett.getConfiguration().get(tmp))) {
-					monitors.get(tmp).setStop();
-					monitors.remove(tmp);
-					try {
-						monitors.put(tmp, new DirectoryMonitor(tmp, true, sett
-								.getConfiguration().get(tmp)));
-						Thread thread = new Thread(monitors.get(tmp));
-						   thread.start();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					monitors.get(tmp).setConfig(sett.getConfiguration().get(tmp));		
+					
 				}
 			}
 
