@@ -23,6 +23,8 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
@@ -37,8 +39,9 @@ public class DirectoryMonitor extends Thread{
     private boolean recursive;
     private boolean trace = false;   
 	private ServerConfig config;
-    private Boolean stop = false;
+    private volatile boolean stop = false;
     private File dir;
+    
     private static final String WEBDAV_PATH = "remote.php/webdav/";
  
     public ServerConfig getConfig() {
@@ -98,7 +101,7 @@ public class DirectoryMonitor extends Thread{
     /**
      * Creates a WatchService and registers the given directory
      */
-    DirectoryMonitor(File dir, boolean recursive, ServerConfig srvConfig) throws IOException {
+    DirectoryMonitor(File dir, boolean recursive, ServerConfig srvConfig) throws IOException {System.out.println("Creating new");
     	config = srvConfig;
     	this.dir = dir;
         this.watcher = FileSystems.getDefault().newWatchService();
@@ -140,7 +143,7 @@ public class DirectoryMonitor extends Thread{
         new WatchDir(dir, recursive).processEvents();
     }
     
-    private void upload(Path file) throws FileNotFoundException, IOException {
+     private void upload(Path file) throws FileNotFoundException, IOException {
     	
     	Sardine sardine = SardineFactory.begin(config.getUser(),config.getPassword());
     	String URL;
@@ -158,25 +161,57 @@ public class DirectoryMonitor extends Thread{
     	{    		
     		URL = config.getServerURL() + "/"+ WEBDAV_PATH + pathOnServer;
     	}
-    	URL.replace(" ", "%20");
     	
-//    	sardine.put(URL, new FileInputStream(name.toFile()));
+    	URL = URL.replaceAll("( )+", "%20");
+    	if(file.toFile().isDirectory()){
+    		sardine.createDirectory(URL);
+    	}
+    	else
+    	{
+    	System.out.println("Uploading");
+    	sardine.put(URL, file.toFile(),Files.probeContentType(file));
+    	System.out.println("Uploaded");
+    	}
     	System.out.println("$$$$$$ " + file.toAbsolutePath() + " &&  && "+ URL);
     }
     
-   
-    public Boolean getStop() {
-        return stop;
+    private void delete(Path file) throws IOException{
+    	Sardine sardine = SardineFactory.begin(config.getUser(),config.getPassword());
+    	String URL;
+    	String pathOnServer = file.toString();
+    	String root = dir.getAbsolutePath();
+    	int trimEnd = root.length();
+    	
+    	pathOnServer = pathOnServer.substring(pathOnServer.indexOf(root)+ trimEnd +1);
+		pathOnServer = pathOnServer.replace(file.toFile().separatorChar, '/');
+    	if(config.getServerURL().endsWith("/"))
+    	{    		
+    		URL = config.getServerURL() + WEBDAV_PATH + pathOnServer;
+    	}
+    	else
+    	{    		
+    		URL = config.getServerURL() + "/"+ WEBDAV_PATH + pathOnServer;
+    	}
+    	
+    	URL = URL.replaceAll("( )+", "%20");
+    	
+    	System.out.println("Deleting");
+    	sardine.delete(URL);
+    	System.out.println("Deleted");
+    	
+    	System.out.println("$$$$$$ " + file.toAbsolutePath() + " &&  && "+ URL);
     }
 
-    public void setStop(Boolean stop) {
-        this.stop = stop;
-    }       
+    public void setStop() {
+    	System.out.println("Stopping the thread");
+    	stop = true;
+
+    	}       
 	@Override
 	public void run() {
-		  while (!stop) {
-
-	            // wait for key to be signalled
+		
+		  while(true) {
+			  // wait for key to be signalled
 	            WatchKey key;
 	            try {
 	                key = watcher.take();
@@ -214,47 +249,62 @@ public class DirectoryMonitor extends Thread{
 	                            registerAll(child);
 	                            
 	                        }
-	                       Thread.sleep(config.getTimeBeforeSynch()*60000);
-//	                        upload(child);
+	                        System.out.println("#####" + Thread.currentThread().getName());
+	                        
 	                        Files.walkFileTree(child, new SimpleFileVisitor<Path>() {
 	                                @Override
 								public FileVisitResult preVisitDirectory(
-										Path dir, BasicFileAttributes attrs)
+										final Path dir, BasicFileAttributes attrs)
 										throws IOException {
-	                                	upload(dir);
+	                                	
+	                                	Timer time = new Timer();System.out.println("starting timer job from" + Thread.currentThread().getName());
+										time.schedule(new TimerTask() {
+											
+											@Override
+											public void run() {
+												// TODO Auto-generated method stub
+												try {
+													upload(dir);
+												} catch (IOException e) {
+													// TODO Auto-generated catch block
+													e.printStackTrace();
+												}
+											}
+										}, config.getTimeBeforeSynch()*60000);
+												
 	                                    return FileVisitResult.CONTINUE;
 								}
 
 									@Override
-	                                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+	                                public FileVisitResult visitFile(final Path file, BasicFileAttributes attrs)
 	                                    throws IOException
 	                                {
-	                                    upload(file);
-	                                    return FileVisitResult.CONTINUE;
+										
+													Timer time = new Timer();System.out.println("starting timer job from" + Thread.currentThread().getName());
+													time.schedule(new TimerTask() {
+														
+														@Override
+														public void run() {
+															// TODO Auto-generated method stub
+															try {
+																upload(file);
+															} catch (IOException e) {
+																// TODO Auto-generated catch block
+																e.printStackTrace();
+															}
+														}
+													}, config.getTimeBeforeSynch()*60000);
+													
+												
+	        							return FileVisitResult.CONTINUE;
 	                                }
 	                            });
 	                    } catch (IOException x) {
 	                        // ignore to keep sample readbale
-	                    } catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+	                    }
 	                }
-	                else if(kind == ENTRY_CREATE){
-	                       try {
-							Thread.sleep(config.getTimeBeforeSynch()*60000);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-	                	try {
-							upload(child);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-	                }
+	              
+	                
 	                //TODO modified and removed
 	            }
 
@@ -268,6 +318,7 @@ public class DirectoryMonitor extends Thread{
 	                    break;
 	                }
 	            }
-	        }
+		  }    
 	}
 }
+

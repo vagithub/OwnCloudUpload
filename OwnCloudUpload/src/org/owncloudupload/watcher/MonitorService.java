@@ -33,11 +33,11 @@ public class MonitorService {
 			while (iter.hasNext()) {
 				tmp = (File) iter.next();
 				if (!sett.getConfiguration().containsKey(tmp)) {
-					monitors.get(tmp).setStop(true);
+					monitors.get(tmp).setStop();
 					monitors.remove(tmp);
 				} else if (!monitors.get(tmp).getConfig()
 						.isConfigurationSame(sett.getConfiguration().get(tmp))) {
-					monitors.get(tmp).setStop(true);
+					monitors.get(tmp).setStop();
 					monitors.remove(tmp);
 					try {
 						monitors.put(tmp, new DirectoryMonitor(tmp, true, sett
