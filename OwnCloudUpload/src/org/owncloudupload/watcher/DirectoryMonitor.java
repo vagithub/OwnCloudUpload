@@ -41,7 +41,7 @@ public class DirectoryMonitor extends Thread{
 	private ServerConfig config;
     private volatile boolean stop = false;
     private File dir;
-    
+    private Timer timer;
     private static final String WEBDAV_PATH = "remote.php/webdav/";
  
     public ServerConfig getConfig() {
@@ -268,6 +268,7 @@ public class DirectoryMonitor extends Thread{
 												// TODO Auto-generated method stub
 												try {
 													upload(dir);
+													this.cancel();
 												} catch (IOException e) {
 													// TODO Auto-generated catch block
 													e.printStackTrace();
@@ -289,6 +290,7 @@ public class DirectoryMonitor extends Thread{
 															// TODO Auto-generated method stub
 															try {
 																upload(file);
+																this.cancel();
 															} catch (IOException e) {
 																// TODO Auto-generated catch block
 																e.printStackTrace();
@@ -322,4 +324,3 @@ public class DirectoryMonitor extends Thread{
 		  }    if(stop)System.out.println("It should have stopped");
 	}
 }
-
