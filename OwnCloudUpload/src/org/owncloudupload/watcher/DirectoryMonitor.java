@@ -165,7 +165,7 @@ public class DirectoryMonitor extends Thread{
     	
     	URL = URL.replaceAll("( )+", "%20");
     	if(file.toFile().isDirectory()){
-    		sardine.createDirectory(URL);
+//    		sardine.createDirectory(URL);
     	}
     	else
     	{

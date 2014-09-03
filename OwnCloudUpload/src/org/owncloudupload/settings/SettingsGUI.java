@@ -118,6 +118,7 @@ public class SettingsGUI extends JPanel {
 			this.data[i][3] = settings.getConfiguration().get(key).getUser();
 			this.data[i][4] = settings.getConfiguration().get(key)
 					.getPassword();
+			i++;
 		}
 	}
 
