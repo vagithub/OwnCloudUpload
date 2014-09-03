@@ -7,6 +7,8 @@ import org.owncloudupload.settings.SettingsManager;
 
 public class CommandParser implements Runnable {
 
+	private SettingsManager settingsManager;
+
 	@Override
 	public void run() {
 		Scanner keyboard = new Scanner(System.in);
@@ -17,20 +19,24 @@ public class CommandParser implements Runnable {
 			choice = keyboard.nextLine();
 			switch (choice) {
 			case "config": {
-				new SettingsGUI().show();
+				new SettingsGUI(settingsManager).show();
 				break;
 			}
 			case "configc": {
-				SettingsManager.editSettings();
+				settingsManager.editSettings();
 				break;
 			}
 			case "exit": {
-				SettingsManager.serializeSettings();
+				settingsManager.serializeSettings();
 				System.exit(0);
 			}
 			}
 
 		}
 
+	}
+	
+	public CommandParser(SettingsManager settingsManager){
+		this.settingsManager = settingsManager;
 	}
 }

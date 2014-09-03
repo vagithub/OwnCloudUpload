@@ -50,6 +50,7 @@ public class DirectoryMonitor extends Thread{
 
 	public void setConfig(ServerConfig config) {
 		this.config = config;
+		System.out.println("^^^^^" + this.config.getTimeBeforeSynch());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -169,7 +170,7 @@ public class DirectoryMonitor extends Thread{
     	else
     	{
     	System.out.println("Uploading");
-    	sardine.put(URL, file.toFile(),Files.probeContentType(file));
+//    	sardine.put(URL, file.toFile(),Files.probeContentType(file));
     	System.out.println("Uploaded");
     	}
     	System.out.println("$$$$$$ " + file.toAbsolutePath() + " &&  && "+ URL);
@@ -205,12 +206,13 @@ public class DirectoryMonitor extends Thread{
     public void setStop() {
     	System.out.println("Stopping the thread");
     	stop = true;
+    	this.interrupt();
 
     	}       
 	@Override
 	public void run() {
 		
-		  while(!stop) {
+		  while(!stop) { if(stop)System.out.println("It should have stopped");
 			  // wait for key to be signalled
 	            WatchKey key;
 	            try {
@@ -250,14 +252,15 @@ public class DirectoryMonitor extends Thread{
 	                            
 	                        }
 	                        System.out.println("#####" + Thread.currentThread().getName());
+	                         Timer time = new Timer();
 	                        
 	                        Files.walkFileTree(child, new SimpleFileVisitor<Path>() {
 	                                @Override
 								public FileVisitResult preVisitDirectory(
 										final Path dir, BasicFileAttributes attrs)
 										throws IOException {
-	                                	
-	                                	Timer time = new Timer();System.out.println("starting timer job from" + Thread.currentThread().getName());
+	                                	 Timer time = new Timer();
+	                                	System.out.println("starting timer job from" + Thread.currentThread().getName() + "MINUtes:" + config.getTimeBeforeSynch()*30000);
 										time.schedule(new TimerTask() {
 											
 											@Override
@@ -270,8 +273,7 @@ public class DirectoryMonitor extends Thread{
 													e.printStackTrace();
 												}
 											}
-										}, config.getTimeBeforeSynch()*60000);
-												
+										}, config.getTimeBeforeSynch()*30000);
 	                                    return FileVisitResult.CONTINUE;
 								}
 
@@ -279,8 +281,7 @@ public class DirectoryMonitor extends Thread{
 	                                public FileVisitResult visitFile(final Path file, BasicFileAttributes attrs)
 	                                    throws IOException
 	                                {
-										
-													Timer time = new Timer();System.out.println("starting timer job from" + Thread.currentThread().getName());
+										 Timer time = new Timer();
 													time.schedule(new TimerTask() {
 														
 														@Override
@@ -293,12 +294,12 @@ public class DirectoryMonitor extends Thread{
 																e.printStackTrace();
 															}
 														}
-													}, config.getTimeBeforeSynch()*60000);
+													}, config.getTimeBeforeSynch()*30000);
 													
-												
 	        							return FileVisitResult.CONTINUE;
 	                                }
 	                            });
+	                        time.cancel();
 	                    } catch (IOException x) {
 	                        // ignore to keep sample readbale
 	                    }
@@ -318,7 +319,7 @@ public class DirectoryMonitor extends Thread{
 	                    break;
 	                }
 	            }
-		  }    
+		  }    if(stop)System.out.println("It should have stopped");
 	}
 }
 

@@ -35,12 +35,12 @@ public class ServerConfig implements Serializable{
 	}
 
 	public boolean isConfigurationSame(ServerConfig other) {
-		if (this.timeBeforeSynch != other.getTimeBeforeSynch()
+		if (this.timeBeforeSynch.longValue() != other.getTimeBeforeSynch().longValue()
 				|| !this.serverURL.equals(other.getServerURL())
 				|| !this.user.equals(other.getPassword())
 				|| !this.password.equals(other.getPassword()))
-			return true;
-		else return false;
+			return false;
+		else return true;
 	}
 
 	@Override

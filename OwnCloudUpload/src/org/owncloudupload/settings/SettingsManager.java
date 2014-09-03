@@ -18,11 +18,12 @@ import org.owncloudupload.watcher.MonitorService;
 
 public class SettingsManager {
 
-	private static Settings settings;
+	private Settings settings;
 	private static final String SETTINGS_FILE = "config.ser";
-	private static HashMap<Integer, File> quickAccess;
+	private HashMap<Integer, File> quickAccess;
+	private MonitorService monitorService;
 
-	public static void initSettings() {
+	public void initSettings() {
 
 		FileInputStream settingsFileIn;
 		ObjectInputStream in;
@@ -30,7 +31,7 @@ public class SettingsManager {
 			settingsFileIn = new FileInputStream(SETTINGS_FILE);
 			in = new ObjectInputStream(settingsFileIn);
 			settings = (Settings) in.readObject();
-			MonitorService.settingsUpdated();
+			monitorService.settingsUpdated(this);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			System.out.println("No settings file found.Please use the config(GUI) or configc(command line) utilities to configure the client");
@@ -47,7 +48,7 @@ public class SettingsManager {
 
 	}
 
-	public static void serializeSettings() {
+	public void serializeSettings() {
 		try {
 			FileOutputStream fileOut = new FileOutputStream(SETTINGS_FILE);
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -59,16 +60,16 @@ public class SettingsManager {
 		}
 	}
 
-	public static Settings getSettings() {
+	public Settings getSettings() {
 		return settings;
 	}
 
-	public static void setSettings(Settings sett) {
+	public void setSettings(Settings sett) {
 		settings = sett;
-		MonitorService.settingsUpdated();
+		monitorService.settingsUpdated(this);
 	}
 
-	public static void editSettings() {
+	public void editSettings() {
 		int choice = -1;
 		Scanner scanner = new Scanner(System.in);
 		int index;
@@ -109,10 +110,10 @@ public class SettingsManager {
 			}
 
 		}
-		MonitorService.settingsUpdated();
+		monitorService.settingsUpdated(this);
 	}
 
-	private static HashMap<Integer, File> printSettings() {
+	private HashMap<Integer, File> printSettings() {
 
 		
 		if (settings != null) {
@@ -158,7 +159,7 @@ public class SettingsManager {
 		quickAccess = map;
 	}
 
-	private static void readEntryFromKeyboard(boolean edit, File key) {
+	private  void readEntryFromKeyboard(boolean edit, File key) {
 
 		long tmpLong;
 		Scanner keyboard = new Scanner(System.in);
@@ -224,7 +225,7 @@ public class SettingsManager {
 
 	}
 
-	private SettingsManager() {
-
+	public SettingsManager() {
+		monitorService = new MonitorService();
 	}
 }

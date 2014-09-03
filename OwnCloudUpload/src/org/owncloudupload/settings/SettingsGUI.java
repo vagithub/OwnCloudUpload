@@ -41,9 +41,11 @@ public class SettingsGUI extends JPanel {
 	private Object[][] data;
 	private String[] columnNames = { "Folder path", "ownCloud URL for upload",
 			"Minutes before synch (0 for immediate)", "User", "Password" };
+	private SettingsManager settingsManager;
 
-	public SettingsGUI() {
+	public SettingsGUI(SettingsManager settingsManager) {
 		super(new GridLayout(2, 0));	
+		this.settingsManager = settingsManager;
 		populateData();
 		CustomDefaultTableModel model = new CustomDefaultTableModel(data, columnNames);
 		
@@ -99,7 +101,7 @@ public class SettingsGUI extends JPanel {
 
 	private void populateData() {
 
-		Settings settings = SettingsManager.getSettings();
+		Settings settings = settingsManager.getSettings();
 		if(settings == null) return;
 		Set keys = settings.getConfiguration().keySet();
 		Iterator iter = keys.iterator();
@@ -123,7 +125,7 @@ public class SettingsGUI extends JPanel {
 	 * Create the GUI and show it. For thread safety, this method should be
 	 * invoked from the event-dispatching thread.
 	 */
-	private static void createAndShowGUI() {
+	private  void createAndShowGUI() {
 		// Create and set up the window.
 		final JFrame frame = new JFrame("Settings editor");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -131,7 +133,7 @@ public class SettingsGUI extends JPanel {
 
 		
 		// Create and set up the content pane.
-		SettingsGUI newContentPane = new SettingsGUI();
+		SettingsGUI newContentPane = new SettingsGUI(settingsManager);
 		
 			newContentPane.populateData();
 		
@@ -182,7 +184,7 @@ public class SettingsGUI extends JPanel {
 			frame.dispose();
 		}
 		else {
-			SettingsManager.setSettings(settings);
+			settingsManager.setSettings(settings);
 		}
 	}
 

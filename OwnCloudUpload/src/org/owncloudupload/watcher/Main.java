@@ -14,8 +14,9 @@ import org.owncloudupload.settings.SettingsManager;
 public class Main {
 
 	public static void main(String[] args) throws IOException {
-		SettingsManager.initSettings();
-		CommandParser cmd = new CommandParser();
+		SettingsManager settingsManager = new SettingsManager();
+		settingsManager.initSettings();
+		CommandParser cmd = new CommandParser(settingsManager);
 		Thread thread = new Thread(cmd);
 		   thread.start();
 	

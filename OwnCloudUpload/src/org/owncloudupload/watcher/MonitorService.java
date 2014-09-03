@@ -12,7 +12,7 @@ import org.owncloudupload.settings.SettingsManager;
 
 public class MonitorService {
 
-	private static HashMap<File, DirectoryMonitor> monitors = new HashMap<File, DirectoryMonitor>();
+	private HashMap<File, DirectoryMonitor> monitors;
 
 	/*
 	 * public static void addMonitor(DirectoryMonitor monitor) {
@@ -22,10 +22,10 @@ public class MonitorService {
 
 	}
 
-	public static void settingsUpdated() {
+	public void settingsUpdated(SettingsManager settingsManager) {
 
 		File tmp;
-		Settings sett = SettingsManager.getSettings();
+		Settings sett = settingsManager.getSettings();
 		Set<File> keys = monitors.keySet();
 		Iterator<File> iter = keys.iterator();
 
@@ -76,5 +76,8 @@ public class MonitorService {
 			}
 		}
 
+	}
+	public MonitorService(){
+		monitors = new HashMap<File, DirectoryMonitor>();
 	}
 }
