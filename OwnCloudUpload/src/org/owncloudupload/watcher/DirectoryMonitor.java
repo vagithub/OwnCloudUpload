@@ -170,7 +170,7 @@ public class DirectoryMonitor extends Thread{
     	else
     	{
     	System.out.println("Uploading");
-//    	sardine.put(URL, file.toFile(),Files.probeContentType(file));
+    	sardine.put(URL, file.toFile(),Files.probeContentType(file));
     	System.out.println("Uploaded");
     	}
     	System.out.println("$$$$$$ " + file.toAbsolutePath() + " &&  && "+ URL);
