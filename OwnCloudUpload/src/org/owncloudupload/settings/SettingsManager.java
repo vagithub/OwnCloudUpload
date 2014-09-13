@@ -71,6 +71,7 @@ public class SettingsManager {
 
 	public void editSettings() {
 		int choice = -1;
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		int index;
 
@@ -128,7 +129,7 @@ public class SettingsManager {
 			while (iter.hasNext()) {
 				key = (File) iter.next();
 				buff.append(pos + "." + key.getAbsolutePath() + " : "
-						+ settings.getConfiguration().get(key).toString());
+						+ settings.getConfiguration().get(key).toString() + "\n");
 				map.put(new Integer(pos), key);
 				pos++;
 			}
@@ -162,6 +163,7 @@ public class SettingsManager {
 	private  void readEntryFromKeyboard(boolean edit, File key) {
 
 		long tmpLong;
+		@SuppressWarnings("resource")
 		Scanner keyboard = new Scanner(System.in);
 		String tmpStr;
 		StringBuffer entry = new StringBuffer();

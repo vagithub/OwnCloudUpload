@@ -47,7 +47,7 @@ public class ServerConfig implements Serializable{
 	public String toString() {
 		return "ServerConfig [timeBeforeSynch=" + timeBeforeSynch
 				+ ", serverURL=" + serverURL + ", user=" + user + ", password="
-				+ password + "]";
+				+ "******" + "]";
 	}
 
 }

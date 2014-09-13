@@ -8,11 +8,13 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -50,7 +52,8 @@ public class SettingsGUI extends JPanel {
 		CustomDefaultTableModel model = new CustomDefaultTableModel(data, columnNames);
 		
 		final JTable table = new JTable(model);
-		
+		table.getTableHeader().setReorderingAllowed(false);
+		table.getColumn("Password").setCellRenderer(new PasswordCellRenderer());
 		table.setPreferredScrollableViewportSize(new Dimension(500, 70));
 		table.setFillsViewportHeight(true);
 
@@ -219,6 +222,7 @@ public class SettingsGUI extends JPanel {
 		return true;
 }
 	
+
 }
 class CustomDefaultTableModel extends DefaultTableModel{
 
@@ -238,3 +242,25 @@ class CustomDefaultTableModel extends DefaultTableModel{
 	
 }
 
+class PasswordCellRenderer extends JPasswordField
+implements TableCellRenderer {
+public PasswordCellRenderer() {
+super();
+
+// This displays astericks in fields since it is a password.
+// It does not affect the actual value of the cell.
+
+this.setText("filler123");
+}
+
+public Component getTableCellRendererComponent(
+JTable  arg0,
+Object arg1,
+boolean arg2,
+boolean arg3,
+int arg4,
+int arg5) {
+
+return this;
+}
+}
