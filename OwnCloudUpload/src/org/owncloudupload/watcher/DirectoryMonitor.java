@@ -165,11 +165,11 @@ public class DirectoryMonitor extends Thread{
     	
     	URL = URL.replaceAll("( )+", "%20");
     	if(file.toFile().isDirectory()){
-//    		sardine.createDirectory(URL);
+    		sardine.createDirectory(URL);
     	}
     	else
     	{
-    	System.out.println("Uploading");
+    	System.out.println("Uploading to " + URL);
     	sardine.put(URL, file.toFile(),Files.probeContentType(file));
     	System.out.println("Uploaded");
     	}
@@ -259,22 +259,22 @@ public class DirectoryMonitor extends Thread{
 								public FileVisitResult preVisitDirectory(
 										final Path dir, BasicFileAttributes attrs)
 										throws IOException {
-	                                	 Timer time = new Timer();
-	                                	System.out.println("starting timer job from" + Thread.currentThread().getName() + "MINUtes:" + config.getTimeBeforeSynch()*30000);
-										time.schedule(new TimerTask() {
+	                                //	 Timer time = new Timer();
+	                               // 	System.out.println("starting timer job from" + Thread.currentThread().getName() + "MINUtes:" + config.getTimeBeforeSynch()*30000);
+									//	time.schedule(new TimerTask() {
 											
-											@Override
-											public void run() {
+									//		@Override
+								//			public void run() {
 												// TODO Auto-generated method stub
 												try {
 													upload(dir);
-													this.cancel();
+												//	this.cancel();
 												} catch (IOException e) {
 													// TODO Auto-generated catch block
 													e.printStackTrace();
 												}
-											}
-										}, config.getTimeBeforeSynch()*30000);
+										//	}
+									//	}, config.getTimeBeforeSynch()*30000);
 	                                    return FileVisitResult.CONTINUE;
 								}
 
@@ -283,6 +283,7 @@ public class DirectoryMonitor extends Thread{
 	                                    throws IOException
 	                                {
 										 Timer time = new Timer();
+										 if(Files.probeContentType(file).contains("image")){
 													time.schedule(new TimerTask() {
 														
 														@Override
@@ -297,7 +298,7 @@ public class DirectoryMonitor extends Thread{
 															}
 														}
 													}, config.getTimeBeforeSynch()*30000);
-													
+										 }
 	        							return FileVisitResult.CONTINUE;
 	                                }
 	                            });
@@ -321,6 +322,6 @@ public class DirectoryMonitor extends Thread{
 	                    break;
 	                }
 	            }
-		  }    if(stop)System.out.println("It should have stopped");
+		  }    
 	}
 }
