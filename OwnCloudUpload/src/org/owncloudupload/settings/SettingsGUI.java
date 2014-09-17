@@ -28,6 +28,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Savepoint;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -100,6 +101,7 @@ public class SettingsGUI extends JPanel {
 		buttons.add(removeButton);
 		buttons.add(saveButton);
 		add(buttons);
+				
 	}
 
 	private void populateData() {
@@ -129,7 +131,7 @@ public class SettingsGUI extends JPanel {
 	 * Create the GUI and show it. For thread safety, this method should be
 	 * invoked from the event-dispatching thread.
 	 */
-	private  void createAndShowGUI() {
+	public  void createAndShowGUI() {
 		// Create and set up the window.
 		final JFrame frame = new JFrame("Settings editor");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -159,7 +161,7 @@ public class SettingsGUI extends JPanel {
 				
 				createAndShowGUI();
 			}
-		});
+		});	
 	}
 
 	private void saveSettings(JTable table) {

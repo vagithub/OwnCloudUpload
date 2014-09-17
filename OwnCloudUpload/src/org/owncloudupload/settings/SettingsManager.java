@@ -31,7 +31,10 @@ public class SettingsManager {
 			settingsFileIn = new FileInputStream(SETTINGS_FILE);
 			in = new ObjectInputStream(settingsFileIn);
 			settings = (Settings) in.readObject();
+			if(settings != null)
+			{
 			monitorService.settingsUpdated(this);
+			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			System.out.println("No settings file found.Please use the config(GUI) or configc(command line) utilities to configure the client");

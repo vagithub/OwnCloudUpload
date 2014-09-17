@@ -1,5 +1,6 @@
 package org.owncloudupload.command;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
 
 import org.owncloudupload.settings.SettingsGUI;
@@ -20,6 +21,21 @@ public class CommandParser implements Runnable {
 			switch (choice) {
 			case "config": {
 				new SettingsGUI(settingsManager).show();
+				/*Thread thr = new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						new SettingsGUI(settingsManager).createAndShowGUI();
+						
+					}
+				}) ;
+				thr.start();try {
+					thr.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				while(!thr.isInterrupted()){System.out.println("$$$$$$");}*/
 				break;
 			}
 			case "configc": {
